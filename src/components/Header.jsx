@@ -16,6 +16,14 @@ const Header = () => {
         setToggle(!toggle);
     }
 
+    const calcItems = () => {
+        let total = 0;
+        state.cart.forEach(item => {
+            total += item.qty;
+        });
+        return total;
+    }
+
     return (
         <nav>
             <img src={menu} alt="menu" className="menu" />
@@ -52,7 +60,11 @@ const Header = () => {
                         onClick={() => setToggleOrders(!toggleOrders)}
                     >
                         <img src={shoppingCart} alt="shopping cart" />
-                        {state.cart.length > 0 ? <div>{state.cart.length}</div> : null}
+                        {
+                            state.cart.length > 0
+                                ? <div>{calcItems()}</div>
+                                : null
+                        }
                     </li>
                 </ul>
             </div>
