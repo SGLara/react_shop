@@ -1,10 +1,17 @@
 import React, { useContext } from 'react';
-import AppContext from '@context/AppContext';
+import { AppContext } from '@context/AppContext';
 import '@styles/OrderItem.scss';
 import close from '@icons/icon_close.png'
 
 const OrderItem = ({ product }) => {
-    const { removeFromCart } = useContext(AppContext);
+    const { dispatch } = useContext(AppContext);
+
+    const removeFromCart = (item) => {
+        dispatch({
+            type: 'REMOVE_FROM_CART',
+            payload: item
+        })
+    }
 
     return (
         <div className="OrderItem">

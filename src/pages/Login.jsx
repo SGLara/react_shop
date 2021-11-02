@@ -29,7 +29,7 @@ const Login = () => {
                         onClick={handleSubmit} >
                         Log in
                     </button>
-                    <a href="/">Forgot my password</a>
+                    <a href="/password-recovery">Forgot my password</a>
                 </form>
                 <button className="secondary-button signup-button">
                     Sign up

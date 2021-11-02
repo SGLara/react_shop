@@ -1,88 +1,68 @@
-import { useState } from "react";
+import { useReducer } from "react";
 
 const initialState = {
     cart: [],
 }
 
-const useInitialState = () => {
-    const [state, setState] = useState(initialState);
+const cartReducer = (state, action) => {
+    const { payload } = action;
+    let tempState;
+    const productExists = state.cart.findIndex(prod => prod.id === payload.id);// -1 non existing, > -1 exists
+    switch (action.type) {
+        case 'ADD_TO_CART':
+            if (productExists > -1) {
+                tempState = {
+                    ...state,
+                    cart: [
+                        ...state.cart.slice(0, productExists),
+                        {
+                            ...state.cart[productExists],
+                            qty: state.cart[productExists].qty + 1
+                        },
+                        ...state.cart.slice(productExists + 1)
+                    ]
+                }
+            } else {
+                tempState = {
+                    ...state,
+                    cart: [...state.cart, { ...payload, qty: 1 }]
+                };
+            }
 
-    const addToCart = (payload) => {
-        const productExists = state.cart.findIndex(prod => prod.id === payload.id);// -1 non existing, > -1 exists
+            return tempState;
+        case 'REMOVE_FROM_CART':
+            if (productExists > -1) {
+                tempState = {
+                    ...state,
+                    cart: [
+                        ...state.cart.slice(0, productExists),
+                        {
+                            ...state.cart[productExists],
+                            qty: state.cart[productExists].qty - 1
+                        },
+                        ...state.cart.slice(productExists + 1)
+                    ]
+                };
+            } if (state.cart[productExists].qty === 1) {
+                tempState = {
+                    ...state,
+                    cart: state.cart.filter(item => item.id !== payload.id)
+                };
+            }
 
-        // * Way 1 to solve it
-        if (productExists > -1) {
-            setState({
-                ...state,
-                cart: [
-                    ...state.cart.slice(0, productExists),
-                    {
-                        ...state.cart[productExists],
-                        qty: state.cart[productExists].qty + 1
-                    },
-                    ...state.cart.slice(productExists + 1)
-                ]
-            });
-        } else {
-            setState({
-                ...state,
-                cart: [...state.cart, { ...payload, qty: 1 }]
-            });
-        }
-
-        // * Way 2 to solve it (with setStateValidated)
-        // setState({
-        //     ...state,
-        //     cart: setStateValidated(productExists)
-        // });
-    };
-
-    const removeFromCart = (payload) => {
-        const productExists = state.cart.findIndex(prod => prod.id === payload.id);// -1 non existing, > -1 exists
-
-        if (productExists > -1) {
-            setState({
-                ...state,
-                cart: [
-                    ...state.cart.slice(0, productExists),
-                    {
-                        ...state.cart[productExists],
-                        qty: state.cart[productExists].qty - 1
-                    },
-                    ...state.cart.slice(productExists + 1)
-                ]
-            });
-        } if (state.cart[productExists].qty === 1) {
-            setState({
-                ...state,
-                cart: state.cart.filter(item => item.id !== payload.id)
-            });
-        }
-    };
-    
-    console.log(state);
-
-
-    const setStateValidated = (productIndex) => {
-        if (productIndex > -1) {
-            return [
-                ...state.cart.slice(0, productIndex),
-                {
-                    ...state.cart[productIndex],
-                    qty: state.cart[productIndex].qty + 1
-                },
-                ...state.cart.slice(productIndex + 1)
-            ];
-        } else {
-            return [...state.cart, { ...payload, qty: 1 }];
-        }
+            return tempState;
+        default:
+            return state;
     }
+}
 
+const useInitialState = () => {
+    // const [state, setState] = useState(initialState);
+    const [cartState, dispatch] = useReducer(cartReducer, initialState);
 
     return {
-        state,
-        addToCart,
-        removeFromCart
+        cartState,
+        dispatch
     }
 }
 

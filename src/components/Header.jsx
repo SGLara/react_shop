@@ -5,12 +5,12 @@ import MyOrder from '@containers/MyOrder';
 import menu from '@icons/icon_menu.svg';
 import logo from '@logos/logo_yard_sale.svg';
 import shoppingCart from '@icons/icon_shopping_cart.svg';
-import AppContext from '@context/AppContext';
+import { AppContext } from '@context/AppContext';
 
 const Header = () => {
     const [toggle, setToggle] = useState(false);
     const [toggleOrders, setToggleOrders] = useState(false);
-    const { state } = useContext(AppContext);
+    const { cartState } = useContext(AppContext);
 
     const handleToggle = () => {
         setToggle(!toggle);
@@ -18,7 +18,7 @@ const Header = () => {
 
     const calcItems = () => {
         let total = 0;
-        state.cart.forEach(item => {
+        cartState.cart.forEach(item => {
             total += item.qty;
         });
         return total;
@@ -31,7 +31,7 @@ const Header = () => {
                 <img src={logo} alt="logo" className="nav-logo" />
                 <ul>
                     <li>
-                        <a href="/">All</a>
+                        <a href="/login"><b>Login</b></a>
                     </li>
                     <li>
                         <a href="/">Clothes</a>
@@ -61,7 +61,7 @@ const Header = () => {
                     >
                         <img src={shoppingCart} alt="shopping cart" />
                         {
-                            state.cart.length > 0
+                            cartState.cart.length > 0
                                 ? <div>{calcItems()}</div>
                                 : null
                         }
@@ -69,7 +69,13 @@ const Header = () => {
                 </ul>
             </div>
             {toggle && <Menu />}
-            {toggleOrders && <MyOrder />}
+            {
+                toggleOrders &&
+                <MyOrder
+                    toggleOrders={toggleOrders}
+                    setToggleOrders={setToggleOrders}
+                />
+            }
         </nav>
     );
 }
